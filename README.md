@@ -120,6 +120,8 @@ src/main/java/com/bookmystay
 
 ## 🔐 Authentication APIs
 
+`/auth/register` and `/auth/signup` both create a new account.
+
 | Method | Endpoint       | Description   |
 | ------ | -------------- | ------------- |
 | POST   | /auth/register | Register User |
