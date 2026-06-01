@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0f172a,50:1e293b,100:334155&height=220&section=header&text=BookMyStay&fontSize=48&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Modern%20Property%20Booking%20Platform%20Backend&descAlignY=58&descSize=18" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0f172a,50:1e293b,100:334155&height=220&section=header&text=BookMyStay&fontSize=48&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Modern%20Hotel%20Booking%20Platform%20Backend&descAlignY=58&descSize=18" />
 
 <p align="center">
   <img src="https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=openjdk" />
