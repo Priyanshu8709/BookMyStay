@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0f172a,50:1e293b,100:334155&height=220&section=header&text=BookMyStay&fontSize=48&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Modern%20Property%20Booking%20Platform%20Backend&descAlignY=58&descSize=18" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0f172a,50:1e293b,100:334155&height=220&section=header&text=BookMyStay&fontSize=48&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Modern%20Hotel%20Booking%20Platform%20Backend&descAlignY=58&descSize=18" />
 
 <p align="center">
   <img src="https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=openjdk" />
@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/Maven-Build Tool-purple?style=for-the-badge&logo=apachemaven" />
 </p>
 
-<h3>🚀 A scalable property booking backend built using Spring Boot</h3>
+<h3>🚀 A scalable Hotel Room booking backend built using Spring Boot</h3>
 
 </div>
 
@@ -20,7 +20,7 @@
 
 # 📖 Overview
 
-BookMyStay is a modern property booking backend system developed using Spring Boot.
+BookMyStay is a modern Hotel Room booking backend system developed using Spring Boot.
 
 This project provides secure authentication, property management, booking functionality, reviews, and RESTful APIs designed with industry-level backend architecture.
 
