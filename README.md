@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/Maven-Build Tool-purple?style=for-the-badge&logo=apachemaven" />
 </p>
 
-<h3>🚀 A scalable property booking backend built using Spring Boot</h3>
+<h3>🚀 A scalable Hotel Room booking backend built using Spring Boot</h3>
 
 </div>
 
@@ -20,7 +20,7 @@
 
 # 📖 Overview
 
-BookMyStay is a modern property booking backend system developed using Spring Boot.
+BookMyStay is a modern Hotel Room booking backend system developed using Spring Boot.
 
 This project provides secure authentication, property management, booking functionality, reviews, and RESTful APIs designed with industry-level backend architecture.
 
