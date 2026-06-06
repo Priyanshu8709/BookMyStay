@@ -58,13 +58,6 @@ public class HotelController {
         hotelService.activateHotelById(hotelId);
         return ResponseEntity.noContent().build();
     }
-    @PatchMapping("/{hotelId}/deactive")
-    @Operation(summary = "Deactivate a Hotel",tags = {"Admin Hotel"})
-    public ResponseEntity<Void>  activateHotel(@PathVariable Long hotelId) {
-        log.info("Deactivate hotel");
-        hotelService.deactivateHotelById(hotelId);
-        return ResponseEntity.noContent().build();
-    }
     @GetMapping
     @Operation(summary = "Get all hotel owed by admin",tags = {"Hotel Admin"})
     public ResponseEntity<List<HotelDto>> getAllHotelByAdmin() {

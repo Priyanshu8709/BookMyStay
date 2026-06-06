@@ -11,7 +11,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.temporal.ChronoUnit;
@@ -25,7 +24,6 @@ import static com.BookMyStay.bookmystay.Util.AppUtil.getCurrentUser;
 @Slf4j
 public class HotelServiceImpl implements HotelService {
     private final HotelRepository hotelRepository;
-    private final HotelService hotelService;
     private final InventoryService inventoryService;
     private final RoomRepository roomRepository;
     private final InventoryRepository inventoryRepository;
@@ -34,10 +32,9 @@ public class HotelServiceImpl implements HotelService {
     public HotelDto createNewHotel(HotelDto hotelDto) {
         log.info("createNewHotel");
         Hotel hotel = modelMapper.map(hotelDto, Hotel.class);
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        hotel.setOwner(user);
+        hotel.setOwner(getCurrentUser());
         hotel.setActive(true);
-        hotelRepository.save(hotel);
+        hotel = hotelRepository.save(hotel);
         return modelMapper.map(hotel, HotelDto.class);
     }
 
@@ -45,10 +42,7 @@ public class HotelServiceImpl implements HotelService {
     public HotelDto getHotelById(Long hotelId) {
         log.info("getHotelById");
         Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(() -> new RuntimeException("hotel not found"));
-        User user= (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!user.equals(hotel.getOwner())){
-            throw new RuntimeException("user not owned");
-        }
+        ensureOwnedByCurrentUser(hotel);
         return modelMapper.map(hotel, HotelDto.class);
 
     }
@@ -57,25 +51,20 @@ public class HotelServiceImpl implements HotelService {
     public HotelDto updateHotelById(Long hotelId, HotelDto hotelDto) {
         log.info("updateHotelById");
         Hotel hotel=hotelRepository.findById(hotelId).orElseThrow(() -> new RuntimeException("hotel not found"));
-        User user= (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!user.equals(hotel.getOwner())){
-            throw new RuntimeException("user not owned");
-        }
+        ensureOwnedByCurrentUser(hotel);
         modelMapper.map(hotelDto, hotel);
         hotel.setId(hotelId);
-        hotelRepository.save(hotel);
+        hotel = hotelRepository.save(hotel);
         return modelMapper.map(hotel, HotelDto.class);
 
     }
 
     @Override
+    @Transactional
     public void deleteHotelByID(Long hotelId) {
         log.info("deleteHotelById");
         Hotel hotel =hotelRepository.findById(hotelId).orElseThrow(() -> new RuntimeException("hotel not found"));
-        User user= (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!user.equals(hotel.getOwner())){
-            throw new RuntimeException("user not owned");
-        }
+        ensureOwnedByCurrentUser(hotel);
         for(Room room: hotel.getRooms()) {
             inventoryService.deleteAllInventories(room);
             roomRepository.deleteById(room.getId());
@@ -88,37 +77,20 @@ public class HotelServiceImpl implements HotelService {
     public void activateHotelById(Long hotelId) {
         log.info("activateHotelById");
         Hotel hotel=hotelRepository.findById(hotelId).orElseThrow(() -> new RuntimeException("hotel not found"));
-        User user= (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!user.equals(hotel.getOwner())){
-            throw new RuntimeException("user not owned");
-        }
+        ensureOwnedByCurrentUser(hotel);
         hotel.setActive(true);
         for(Room room: hotel.getRooms()) {
             inventoryService.initializeRoomForAYear(room);
         }
     }
 
-    @Override
-    @Transactional
-    public void deactivateHotelById(Long hotelId) {
-        Hotel hotel=hotelRepository.findById(hotelId).orElseThrow(() -> new RuntimeException("hotel not found"));
-        User user= (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!user.equals(hotel.getOwner())){
-            throw new RuntimeException("user not owned");
-        }
-        hotel.setActive(false);
-        for(Room room: hotel.getRooms()) {
-            inventoryService.deinitializeRoomForAYear(room);
-        }
-
-    }
 
 
     @Override
     public List<HotelDto> getAllHotel() {
 
         User user=getCurrentUser();
-        log.info("getHotelInfoById");
+        log.info("getAllHotel");
         List<Hotel> hotels=hotelRepository.findByOwner(user);
 
         return hotels
@@ -148,5 +120,12 @@ public class HotelServiceImpl implements HotelService {
 
         return new HotelInfoDto(modelMapper.map(hotel, HotelDto.class), rooms);
 
+    }
+
+    private void ensureOwnedByCurrentUser(Hotel hotel) {
+        User currentUser = getCurrentUser();
+        if (currentUser == null || hotel.getOwner() == null || !currentUser.getId().equals(hotel.getOwner().getId())) {
+            throw new RuntimeException("user not owned");
+        }
     }
 }
