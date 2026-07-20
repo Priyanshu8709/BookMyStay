@@ -1,6 +1,7 @@
 package com.BookMyStay.bookmystay.Repository;
 
 import com.BookMyStay.bookmystay.Dto.RoomPriceDto;
+import com.BookMyStay.bookmystay.Dto.HotelPriceDto;
 import com.BookMyStay.bookmystay.Entity.Hotel;
 import com.BookMyStay.bookmystay.Entity.Inventory;
 import com.BookMyStay.bookmystay.Entity.Room;
@@ -103,10 +104,24 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     @Modifying
     @Query("""
                 UPDATE Inventory i
+                SET i.reservedCount = i.reservedCount - :numberOfRooms
+                WHERE i.room.id = :roomId
+                  AND i.date BETWEEN :startDate AND :endDate
+                  AND i.reservedCount >= :numberOfRooms
+                  AND i.closed = false
+            """)
+    void releaseReservation(@Param("roomId") Long roomId,
+                            @Param("startDate") LocalDate startDate,
+                            @Param("endDate") LocalDate endDate,
+                            @Param("numberOfRooms") int numberOfRooms);
+
+    @Modifying
+    @Query("""
+                UPDATE Inventory i
                 SET i.bookedCount = i.bookedCount - :numberOfRooms
                 WHERE i.room.id = :roomId
                   AND i.date BETWEEN :startDate AND :endDate
-                  AND (i.totalCount - i.bookedCount) >= :numberOfRooms
+                  AND i.bookedCount >= :numberOfRooms
                   AND i.closed = false
             """)
     void cancelBooking(@Param("roomId") Long roomId,
@@ -117,6 +132,36 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     List<Inventory> findByHotelAndDateBetween(Hotel hotel, LocalDate startDate, LocalDate endDate);
 
     List<Inventory> findByRoomOrderByDate(Room room);
+
+    @Query(
+            value = """
+                    SELECT new com.BookMyStay.bookmystay.Dto.HotelPriceDto(i.hotel, AVG(i.price))
+                    FROM Inventory i
+                    WHERE i.city = :city
+                      AND i.date BETWEEN :startDate AND :endDate
+                      AND i.closed = false
+                      AND i.hotel.active = true
+                    GROUP BY i.hotel
+                    HAVING COUNT(DISTINCT i.date) = :dateCount
+                       AND MIN(i.totalCount - i.bookedCount - i.reservedCount) >= :roomsCount
+                    """,
+            countQuery = """
+                    SELECT COUNT(DISTINCT i.hotel.id)
+                    FROM Inventory i
+                    WHERE i.city = :city
+                      AND i.date BETWEEN :startDate AND :endDate
+                      AND i.closed = false
+                      AND i.hotel.active = true
+                    """
+    )
+    Page<HotelPriceDto> findAvailableHotelPrices(
+            @Param("city") String city,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("roomsCount") Integer roomsCount,
+            @Param("dateCount") Long dateCount,
+            Pageable pageable
+    );
 
     @Query("""
                 SELECT i

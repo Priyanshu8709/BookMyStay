@@ -32,7 +32,6 @@ import static com.BookMyStay.bookmystay.Util.AppUtil.getCurrentUser;
 public class InventoryServiceImpl implements InventoryService {
     private final InventoryRepository inventoryRepository;
     private final RoomRepository roomRepository;
-    private final HotelMinPriceRepository hotelMinPriceRepository;
     private final ModelMapper modelMapper;
 
 
@@ -51,7 +50,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         // business logic - 90 days
         Page<HotelPriceDto> hotelPage =
-                hotelMinPriceRepository.findHotelsWithAvailableInventory(hotelSearchRequest.getCity(),
+                inventoryRepository.findAvailableHotelPrices(hotelSearchRequest.getCity(),
                         hotelSearchRequest.getStartDate(), hotelSearchRequest.getEndDate(), hotelSearchRequest.getRoomsCount(),
                         dateCount, pageable);
 

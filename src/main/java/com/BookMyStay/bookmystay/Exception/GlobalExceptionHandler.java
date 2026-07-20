@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -19,6 +19,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleUserNotFound(Exception exception) {
         ApiError apiError=new ApiError("Username not found"+exception.getMessage(), HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(apiError,apiError.getStatusCode());
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiError> handleResourceNotFound(ResourceNotFoundException exception) {
+        ApiError apiError = new ApiError(exception.getMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(apiError, apiError.getStatusCode());
     }
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiError> handleAuthenticationException(Exception exception) {
@@ -34,6 +40,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleAccessDeniedException(Exception exception) {
         ApiError apiError=new ApiError("Access Denied", HttpStatus.FORBIDDEN);
         return new ResponseEntity<>(apiError,apiError.getStatusCode());
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
+    public ResponseEntity<ApiError> handleBadRequest(RuntimeException exception) {
+        ApiError apiError = new ApiError(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiError, apiError.getStatusCode());
     }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleException(Exception exception) {

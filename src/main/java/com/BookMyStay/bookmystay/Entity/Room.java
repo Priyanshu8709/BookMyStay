@@ -8,7 +8,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -48,17 +47,4 @@ public class Room {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "booking_guest",
-            joinColumns = @JoinColumn(name = "booking_id"),
-            inverseJoinColumns = @JoinColumn(name = "guest_id")
-    )
-    private Set<Guest> guests;
-
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal amount;
-
-    @Column(unique = true)
-    private String paymentSessionId;
 }
